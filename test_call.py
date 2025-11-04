@@ -33,6 +33,8 @@ def initiate_call(phone_number):
     }
     
     try:
+        # Note: Phone number is displayed for testing purposes only
+        # In production, consider masking: +1202***1234
         print(f"Initiating call to {phone_number}...")
         response = requests.post(url, json=payload)
         
