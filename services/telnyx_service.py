@@ -10,7 +10,10 @@ from config import Config
 logger = logging.getLogger(__name__)
 
 # Initialize Telnyx with API key
-telnyx.api_key = Config.TELNYX_API_KEY
+if Config.TELNYX_API_KEY:
+    telnyx.api_key = Config.TELNYX_API_KEY
+else:
+    logger.warning("TELNYX_API_KEY not configured - Telnyx operations will fail")
 
 
 class TelnyxService:

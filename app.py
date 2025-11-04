@@ -67,6 +67,16 @@ def internal_error(e):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
+    # Validate configuration
+    try:
+        from config import Config
+        Config.validate()
+        logger.info("Configuration validated successfully")
+    except ValueError as e:
+        logger.error(f"Configuration validation failed: {e}")
+        logger.error("Please check your .env file and ensure all required values are set")
+        sys.exit(1)
+    
     # Create database tables
     with app.app_context():
         db.create_all()

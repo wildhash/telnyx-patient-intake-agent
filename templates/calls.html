@@ -21,7 +21,10 @@
     
     <script>
         fetch('/api/calls?limit=100')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load calls');
+                return response.json();
+            })
             .then(data => {
                 const container = document.getElementById('callsList');
                 
@@ -46,6 +49,10 @@
                 
                 html += '</tbody></table>';
                 container.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading calls:', error);
+                document.getElementById('callsList').innerHTML = '<p style="color: red;">Error loading calls. Please try again.</p>';
             });
     </script>
 </body>

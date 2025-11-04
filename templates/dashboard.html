@@ -307,7 +307,10 @@
         // Load statistics
         function loadStats() {
             fetch('/api/stats')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load statistics');
+                    return response.json();
+                })
                 .then(data => {
                     document.getElementById('totalPatients').textContent = data.total_patients;
                     document.getElementById('totalCalls').textContent = data.total_calls;
@@ -317,13 +320,17 @@
                 })
                 .catch(error => {
                     console.error('Error loading stats:', error);
+                    document.getElementById('totalPatients').textContent = 'Error';
                 });
         }
         
         // Load recent calls
         function loadRecentCalls() {
             fetch('/api/calls?limit=10')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load calls');
+                    return response.json();
+                })
                 .then(data => {
                     const container = document.getElementById('recentCalls');
                     

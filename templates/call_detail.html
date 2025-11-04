@@ -30,11 +30,15 @@
     </div>
     
     <script>
-        const callId = {{ call_id }};
+        // Safely pass call_id from server to client
+        const callId = parseInt('{{ call_id }}', 10);
         
         // Load call details
         fetch(`/api/calls/${callId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load call details');
+                return response.json();
+            })
             .then(call => {
                 document.getElementById('callDetails').innerHTML = `
                     <p><strong>Status:</strong> ${call.status}</p>
@@ -46,22 +50,36 @@
                     <p><strong>Started:</strong> ${new Date(call.started_at).toLocaleString()}</p>
                     <p><strong>Ended:</strong> ${call.ended_at ? new Date(call.ended_at).toLocaleString() : 'N/A'}</p>
                 `;
+            })
+            .catch(error => {
+                console.error('Error loading call details:', error);
+                document.getElementById('callDetails').innerHTML = '<p style="color: red;">Error loading call details</p>';
             });
         
         // Load intake data
         fetch(`/api/calls/${callId}/intake-data`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load intake data');
+                return response.json();
+            })
             .then(data => {
                 if (data.intake_data) {
                     document.getElementById('intakeData').innerHTML = `<pre>${JSON.stringify(data.intake_data, null, 2)}</pre>`;
                 } else {
                     document.getElementById('intakeData').innerHTML = '<p>No intake data available</p>';
                 }
+            })
+            .catch(error => {
+                console.error('Error loading intake data:', error);
+                document.getElementById('intakeData').innerHTML = '<p style="color: red;">Error loading intake data</p>';
             });
         
         // Load transcripts
         fetch(`/api/calls/${callId}/transcripts`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load transcripts');
+                return response.json();
+            })
             .then(data => {
                 if (data.total === 0) {
                     document.getElementById('transcripts').innerHTML = '<p>No transcripts available</p>';
@@ -77,6 +95,10 @@
                 });
                 
                 document.getElementById('transcripts').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading transcripts:', error);
+                document.getElementById('transcripts').innerHTML = '<p style="color: red;">Error loading transcripts</p>';
             });
     </script>
 </body>

@@ -21,7 +21,10 @@
     
     <script>
         fetch('/api/patients')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load patients');
+                return response.json();
+            })
             .then(data => {
                 const container = document.getElementById('patientsList');
                 
@@ -45,6 +48,10 @@
                 
                 html += '</tbody></table>';
                 container.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading patients:', error);
+                document.getElementById('patientsList').innerHTML = '<p style="color: red;">Error loading patients. Please try again.</p>';
             });
     </script>
 </body>

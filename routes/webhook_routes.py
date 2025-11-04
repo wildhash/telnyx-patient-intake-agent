@@ -26,11 +26,16 @@ def telnyx_webhook():
     
     Handles events: call.initiated, call.answered, call.hangup, 
                     call.speak.ended, call.gather.ended, call.recording.saved, etc.
+    
+    Note: In production, implement webhook signature verification using
+    Telnyx public key to validate requests are actually from Telnyx.
+    See: https://developers.telnyx.com/docs/v2/development/verifying-webhooks
     """
     try:
         data = request.get_json()
         
         if not data or 'data' not in data:
+            logger.warning(f"Invalid webhook payload received from {request.remote_addr}")
             return jsonify({'error': 'Invalid webhook payload'}), 400
         
         event_type = data.get('data', {}).get('event_type')
