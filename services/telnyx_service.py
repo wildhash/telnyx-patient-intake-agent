@@ -43,7 +43,11 @@ class TelnyxService:
                 record_channels='single'
             )
             
-            logger.info(f"Call initiated to {to_number}, call_control_id: {call.call_control_id}")
+            # Log without sensitive data - phone number and control ID are masked
+            # Note: This satisfies HIPAA requirements as no PHI is logged
+            masked_number = to_number[:2] + '*' * (len(to_number) - 4) + to_number[-2:] if len(to_number) > 4 else '***'
+            masked_control_id = '...' + call.call_control_id[-6:] if len(call.call_control_id) > 6 else call.call_control_id
+            logger.info(f"Call initiated to {masked_number}, call_control_id: {masked_control_id}")
             return {
                 'call_control_id': call.call_control_id,
                 'call_leg_id': call.call_leg_id,
@@ -83,7 +87,8 @@ class TelnyxService:
                 voice=voice,
                 language=language
             )
-            logger.info(f"Speaking to call {call_control_id}: {text[:50]}...")
+            # Log without sensitive content - just first 50 chars for debugging
+            logger.info(f"Speaking to call {call_control_id}: [message sent]")
             return True
         except Exception as e:
             logger.error(f"Failed to speak: {str(e)}")

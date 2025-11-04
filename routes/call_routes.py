@@ -74,7 +74,7 @@ def initiate_call():
     except Exception as e:
         logger.error(f"Error initiating call: {str(e)}")
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Failed to initiate call'}), 500
 
 
 @bp.route('/<int:call_id>', methods=['GET'])
@@ -103,7 +103,7 @@ def hangup_call(call_id):
         
     except Exception as e:
         logger.error(f"Error hanging up call: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Failed to hang up call'}), 500
 
 
 @bp.route('', methods=['GET'])

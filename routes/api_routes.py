@@ -61,7 +61,7 @@ def create_patient():
     except Exception as e:
         logger.error(f"Error creating patient: {str(e)}")
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Failed to create patient'}), 500
 
 
 @bp.route('/patients/<int:patient_id>', methods=['GET'])
@@ -99,7 +99,7 @@ def update_patient(patient_id):
     except Exception as e:
         logger.error(f"Error updating patient: {str(e)}")
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Failed to update patient'}), 500
 
 
 @bp.route('/patients/<int:patient_id>/calls', methods=['GET'])
