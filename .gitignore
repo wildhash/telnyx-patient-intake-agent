@@ -61,3 +61,12 @@ data/
 tmp/
 temp/
 *.tmp
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+coverage.xml
+
+# Backups
+backup_data_*.tar.gz

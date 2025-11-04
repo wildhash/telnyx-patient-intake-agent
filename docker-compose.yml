@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: telnyx-patient-intake-agent
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - TELNYX_API_KEY=${TELNYX_API_KEY}
+      - TELNYX_CONNECTION_ID=${TELNYX_CONNECTION_ID}
+      - TELNYX_PHONE_NUMBER=${TELNYX_PHONE_NUMBER}
+      - TELNYX_PUBLIC_KEY=${TELNYX_PUBLIC_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///patient_intake.db}
+      - MEMVERGE_ENABLED=${MEMVERGE_ENABLED:-false}
+      - MEMVERGE_API_KEY=${MEMVERGE_API_KEY}
+      - MEMVERGE_ENDPOINT=${MEMVERGE_ENDPOINT}
+      - APERTUREDATA_ENABLED=${APERTUREDATA_ENABLED:-false}
+      - APERTUREDATA_HOST=${APERTUREDATA_HOST}
+      - APERTUREDATA_PORT=${APERTUREDATA_PORT}
+      - APERTUREDATA_USERNAME=${APERTUREDATA_USERNAME}
+      - APERTUREDATA_PASSWORD=${APERTUREDATA_PASSWORD}
+      - BACKEND_API_URL=${BACKEND_API_URL}
+      - BACKEND_API_KEY=${BACKEND_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./patient_intake.db:/app/patient_intake.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: PostgreSQL database for production
+  # Uncomment to use PostgreSQL instead of SQLite
+  # db:
+  #   image: postgres:14-alpine
+  #   container_name: telnyx-db
+  #   environment:
+  #     - POSTGRES_DB=patient_intake
+  #     - POSTGRES_USER=telnyx
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+  # Optional: Redis for caching (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: telnyx-redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:

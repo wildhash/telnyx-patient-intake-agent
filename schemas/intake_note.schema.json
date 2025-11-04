@@ -1,0 +1,269 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Patient Intake Note",
+  "description": "Structured schema for patient intake call notes",
+  "type": "object",
+  "required": ["call_id", "patient_info", "consent", "created_at"],
+  "properties": {
+    "call_id": {
+      "type": "string",
+      "description": "Unique identifier for the call"
+    },
+    "patient_info": {
+      "type": "object",
+      "properties": {
+        "patient_id": {
+          "type": ["string", "integer", "null"]
+        },
+        "phone_number": {
+          "type": "string",
+          "pattern": "^\\+[1-9]\\d{1,14}$"
+        },
+        "first_name": {
+          "type": ["string", "null"]
+        },
+        "last_name": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "required": ["given", "timestamp"],
+      "properties": {
+        "given": {
+          "type": "boolean",
+          "description": "Whether the patient provided consent"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When consent was given"
+        },
+        "recording_consent": {
+          "type": "boolean",
+          "description": "Consent to record the call"
+        }
+      }
+    },
+    "hpi": {
+      "type": "object",
+      "description": "History of Present Illness",
+      "properties": {
+        "chief_complaint": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "symptom_duration": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "pain_level": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "ample": {
+      "type": "object",
+      "description": "AMPLE History (Allergies, Medications, Past history, Last meal, Events)",
+      "properties": {
+        "allergies": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "medications": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "past_medical_history": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "last_meal": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "family_history": {
+      "type": "object",
+      "description": "Family medical history",
+      "properties": {
+        "heart_disease": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "diabetes": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "cancer": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "timestamp": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "call_metadata": {
+      "type": "object",
+      "properties": {
+        "telnyx_call_id": {
+          "type": "string"
+        },
+        "duration_seconds": {
+          "type": "number"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ended_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["initiated", "ringing", "answered", "completed", "failed", "busy", "no_answer"]
+        }
+      }
+    },
+    "recording": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": ["string", "null"],
+          "format": "uri"
+        },
+        "format": {
+          "type": "string",
+          "default": "mp3"
+        },
+        "duration_seconds": {
+          "type": ["number", "null"]
+        }
+      }
+    },
+    "transcript": {
+      "type": "object",
+      "properties": {
+        "full_text": {
+          "type": "string"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "speaker": {
+                "type": "string",
+                "enum": ["agent", "patient"]
+              },
+              "text": {
+                "type": "string"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this intake note was created"
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the intake was completed"
+    }
+  }
+}
