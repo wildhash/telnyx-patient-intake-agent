@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients - Telnyx Patient Intake Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <h1>👥 All Patients</h1>
+        <a href="/dashboard" style="color: white;">← Back to Dashboard</a>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <h2>Patient List</h2>
+            <div id="patientsList" class="loading">Loading patients...</div>
+        </div>
+    </div>
+    
+    <script>
+        fetch('/api/patients')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('patientsList');
+                
+                if (data.total === 0) {
+                    container.innerHTML = '<p>No patients found.</p>';
+                    return;
+                }
+                
+                let html = '<table><thead><tr><th>ID</th><th>Phone</th><th>Name</th><th>Email</th><th>Created</th></tr></thead><tbody>';
+                
+                data.patients.forEach(patient => {
+                    const name = `${patient.first_name || ''} ${patient.last_name || ''}`.trim() || 'N/A';
+                    html += `<tr>
+                        <td>${patient.id}</td>
+                        <td>${patient.phone_number}</td>
+                        <td>${name}</td>
+                        <td>${patient.email || 'N/A'}</td>
+                        <td>${new Date(patient.created_at).toLocaleString()}</td>
+                    </tr>`;
+                });
+                
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            });
+    </script>
+</body>
+</html>
