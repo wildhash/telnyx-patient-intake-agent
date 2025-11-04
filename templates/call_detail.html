@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Details - Telnyx Patient Intake Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <h1>📞 Call Details</h1>
+        <a href="/dashboard/calls" style="color: white;">← Back to Calls</a>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <h2>Call Information</h2>
+            <div id="callDetails" class="loading">Loading call details...</div>
+        </div>
+        
+        <div class="section">
+            <h2>Intake Data</h2>
+            <div id="intakeData" class="loading">Loading intake data...</div>
+        </div>
+        
+        <div class="section">
+            <h2>Transcripts</h2>
+            <div id="transcripts" class="loading">Loading transcripts...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Safely pass call_id from server to client
+        const callId = parseInt('{{ call_id }}', 10);
+        
+        // Load call details
+        fetch(`/api/calls/${callId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load call details');
+                return response.json();
+            })
+            .then(call => {
+                document.getElementById('callDetails').innerHTML = `
+                    <p><strong>Status:</strong> ${call.status}</p>
+                    <p><strong>From:</strong> ${call.from_number}</p>
+                    <p><strong>To:</strong> ${call.to_number}</p>
+                    <p><strong>Duration:</strong> ${call.duration_seconds ? call.duration_seconds + ' seconds' : 'N/A'}</p>
+                    <p><strong>Consent Given:</strong> ${call.consent_given ? 'Yes' : 'No'}</p>
+                    <p><strong>Recording URL:</strong> ${call.recording_url ? `<a href="${call.recording_url}" target="_blank">Download</a>` : 'N/A'}</p>
+                    <p><strong>Started:</strong> ${new Date(call.started_at).toLocaleString()}</p>
+                    <p><strong>Ended:</strong> ${call.ended_at ? new Date(call.ended_at).toLocaleString() : 'N/A'}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Error loading call details:', error);
+                document.getElementById('callDetails').innerHTML = '<p style="color: red;">Error loading call details</p>';
+            });
+        
+        // Load intake data
+        fetch(`/api/calls/${callId}/intake-data`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load intake data');
+                return response.json();
+            })
+            .then(data => {
+                if (data.intake_data) {
+                    document.getElementById('intakeData').innerHTML = `<pre>${JSON.stringify(data.intake_data, null, 2)}</pre>`;
+                } else {
+                    document.getElementById('intakeData').innerHTML = '<p>No intake data available</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading intake data:', error);
+                document.getElementById('intakeData').innerHTML = '<p style="color: red;">Error loading intake data</p>';
+            });
+        
+        // Load transcripts
+        fetch(`/api/calls/${callId}/transcripts`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load transcripts');
+                return response.json();
+            })
+            .then(data => {
+                if (data.total === 0) {
+                    document.getElementById('transcripts').innerHTML = '<p>No transcripts available</p>';
+                    return;
+                }
+                
+                let html = '';
+                data.transcripts.forEach(t => {
+                    html += `<div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <strong>${t.speaker.toUpperCase()}:</strong> ${t.text}
+                        <br><small>${new Date(t.timestamp).toLocaleString()}</small>
+                    </div>`;
+                });
+                
+                document.getElementById('transcripts').innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading transcripts:', error);
+                document.getElementById('transcripts').innerHTML = '<p style="color: red;">Error loading transcripts</p>';
+            });
+    </script>
+</body>
+</html>
