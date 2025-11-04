@@ -39,9 +39,17 @@ def initiate_call(phone_number):
         if response.status_code in [200, 201]:
             data = response.json()
             print(f"✅ Call initiated successfully!")
-            print(f"   Call ID: {data.get('call', {}).get('id')}")
-            print(f"   Telnyx Call ID: {data.get('call', {}).get('telnyx_call_id')}")
-            print(f"   Status: {data.get('call', {}).get('status')}")
+            call_id = data.get('call', {}).get('id')
+            telnyx_call_id = data.get('call', {}).get('telnyx_call_id', 'N/A')
+            status = data.get('call', {}).get('status')
+            print(f"   Call ID: {call_id}")
+            # Mask sensitive call ID for security
+            if telnyx_call_id and len(telnyx_call_id) > 8:
+                masked_id = telnyx_call_id[:4] + "..." + telnyx_call_id[-4:]
+                print(f"   Telnyx Call ID: {masked_id}")
+            else:
+                print(f"   Telnyx Call ID: {telnyx_call_id}")
+            print(f"   Status: {status}")
             return data
         else:
             print(f"❌ Failed to initiate call: {response.status_code}")

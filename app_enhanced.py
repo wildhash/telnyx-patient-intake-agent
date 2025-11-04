@@ -104,10 +104,10 @@ def test_storage():
         }), 200
         
     except Exception as e:
-        logger.error(f'Storage test failed: {str(e)}')
+        logger.error(f'Storage test failed')
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': 'Storage test failed. Check server logs for details.'
         }), 500
 
 
@@ -121,8 +121,8 @@ def get_intake_notes():
             'notes': notes
         }), 200
     except Exception as e:
-        logger.error(f'Error fetching intake notes: {str(e)}')
-        return jsonify({'error': str(e)}), 500
+        logger.error(f'Error fetching intake notes')
+        return jsonify({'error': 'Failed to fetch intake notes. Check server logs.'}), 500
 
 
 @app.errorhandler(404)
