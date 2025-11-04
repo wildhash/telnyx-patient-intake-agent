@@ -29,10 +29,10 @@ QUESTIONS = {
         },
         {
             "id": "pain_level",
-            "prompt": "On a scale of 1 to 10, with 10 being the worst pain, how would you rate your pain level? Please press a number from 0 to 10.",
+            "prompt": "On a scale of 0 to 9, how would you rate your pain level? Please press a single number.",
             "type": "dtmf",
-            "valid_digits": "012345678910",
-            "max_digits": 2,
+            "valid_digits": "0123456789",
+            "max_digits": 1,
             "section": "hpi"
         }
     ],

@@ -2,7 +2,8 @@
 
 // Configuration
 const API_BASE_URL = window.location.origin;
-const POLL_INTERVAL = 5000; // 5 seconds
+const POLL_INTERVAL = 5000; // 5 seconds - configurable for different environments
+const E164_REGEX = /^\+[1-9]\d{1,14}$/; // E.164 phone number format
 
 // State
 let currentCall = null;
@@ -47,7 +48,7 @@ async function handleCallSubmit(event) {
     }
     
     // Validate E.164 format
-    if (!phoneNumber.match(/^\+[1-9]\d{1,14}$/)) {
+    if (!phoneNumber.match(E164_REGEX)) {
         showAlert('Phone number must be in E.164 format (e.g., +12345678900)', 'error');
         return;
     }
